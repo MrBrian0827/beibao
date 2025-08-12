@@ -26,6 +26,11 @@
   --card-bg: #fff;
   --shadow-color: rgba(0,0,0,0.08);
 }
+
+/* 關鍵：切換顯示用 */
+.section { display: none; }
+.section.active { display: block; }
+
 body {
   margin: 0;
   background: var(--bg-color);
@@ -57,7 +62,7 @@ h1 {
 }
 .menu-grid button {
   height: 60px;
-  font-size: 1.6em;
+  font-size: clamp(1.2em, 2.5vw, 1.6em);
   border-radius: 8px;
   border: none;
   background: var(--main-color);
@@ -65,6 +70,14 @@ h1 {
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 8px 10px;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .menu-grid button:hover:not(:disabled) {
   background: var(--main-hover);
@@ -73,7 +86,6 @@ h1 {
   background: #99b3b2;
   cursor: not-allowed;
 }
-/* 讓最後一個按鈕跨兩欄 */
 .menu-grid button#goToHelp {
   grid-column: span 2;
 }
@@ -104,7 +116,6 @@ button {
   cursor: pointer;
   transition: background-color 0.2s ease;
   margin: 12px auto 0;
-  display: block;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -124,13 +135,73 @@ button {
   cursor: not-allowed;
 }
 
-.section { display: none; }
-.section.active { display: block; }
-.backBtn {
-  margin-top: 16px;
-  padding: 15px 0;
-  width: 100%;
+/* 擲筊結果 */
+#tossResult {
+  font-size: 1.2em;
+  margin-bottom: 12px;
 }
+
+/* 擲骰子結果與骰子圖示 */
+#diceResult {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+}
+#diceVisual img {
+  width: 50px;
+  height: 50px;
+}
+
+/* 擲骰子輸入欄位 */
+#diceCount {
+  font-size: 1em;
+  width: 50px;
+  padding: 4px 6px;
+  margin-top: 6px;
+}
+
+/* 擲硬幣結果 */
+#coinResult {
+  margin-top: 10px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2em;
+}
+#coinResult img {
+  width: 80px;
+  height: 80px;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 俄羅斯輪盤結果文字 */
+#russianResult {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 1.2em;
+  min-height: 36px;
+  margin-bottom: 12px;
+}
+
+/* 俄羅斯輪盤按鈕 */
+#spinTriggerBtn,
+#globalResetBtn {
+  width: 120px;
+  height: 60px;
+  font-size: 1.5em;
+  margin: 12px auto 0;
+  padding: 0;
+}
+
+/* 保持整體卡片可用空間 */
+.card {
+  max-width: 95vw;
+  width: 360px;
+}
+
+/* 其他小調整 */
 .cups {
   display: flex;
   justify-content: center;
@@ -157,75 +228,73 @@ button {
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-}
-.flat {
+  color: #222;
   background: #f6e7c8;
+  user-select: none;
 }
-.curved {
+.half.curved {
   background: #e8d6b0;
 }
-@keyframes toss {
-  0% {
-    transform: translateY(0) rotate(0);
+
+/* 手機版放大 */
+@media (max-width: 768px) {
+  #tossResult {
+    font-size: 1.8em;
   }
-  30% {
-    transform: translateY(-48px) rotate(540deg);
+  #diceResult {
+    font-size: 1.8em;
   }
-  60% {
-    transform: translateY(0) rotate(900deg);
+  #diceVisual img {
+    width: 75px;
+    height: 75px;
   }
-  100% {
-    transform: translateY(0) rotate(0);
+  #diceCount {
+    font-size: 1.5em;
+    width: 60px;
+    padding: 6px 8px;
+  }
+  #coinResult {
+    font-size: 1.8em;
+    gap: 12px;
+  }
+  #coinResult img {
+    width: 120px;
+    height: 120px;
+  }
+  #russianResult {
+    font-size: 1.8em;
+    min-height: 48px;
+  }
+  #spinTriggerBtn,
+  #globalResetBtn {
+    width: 180px;
+    height: 90px;
+    font-size: 1.8em;
+  }
+  .cups {
+    gap: 20px;
+  }
+  .cup {
+    width: 180px;
+    height: 120px;
+  }
+  .half {
+    width: 160px;
+    height: 90px;
+    font-size: 20px;
   }
 }
-#diceVisual {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
+
+/* 各功能區的執行按鈕和返回按鈕間距 */
+.section button:not(.backBtn) {
+  margin-bottom: 24px;  /* 執行按鈕底下多出空間 */
 }
-#diceVisual img {
-  width: 50px;
-  height: 50px;
-}
-#coinResult {
-  margin-top: 10px;
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-#coinResult img {
-  width: 80px;
-  height: 80px;
-  user-select: none;
-  pointer-events: none;
-}
-#russianResult {
-  margin-top: 8px;
-  font-weight: 600;
-  font-size: 18px;
-  min-height: 36px;
-}
-#help {
-  text-align: left;
-  font-size: 14px;
-  line-height: 1.4;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-#help h2 {
-  text-align: center;
-  margin: 0 0 8px;
-}
-#help h3 {
-  margin: 8px 0 4px;
-}
-#help ol {
-  margin: 4px 0;
-  padding-left: 20px;
+
+/* 返回主選單按鈕上方加間距 */
+.backBtn {
+  margin-top: 32px !important;
+  padding: 15px 0;
+  width: 100%;
 }
 </style>
 </head>
@@ -263,7 +332,9 @@ button {
     <h1>擲骰子</h1>
     <div id="diceResult"></div>
     <div id="diceVisual"></div>
-    <label style="display:block;margin-top:8px;">擲幾顆（1～6）：<input type="number" id="diceCount" min="1" max="6" value="1"/></label>
+    <label style="display:block; margin-top:8px; font-size:1em;">擲幾顆（1～6）：
+      <input type="number" id="diceCount" min="1" max="6" value="1"/>
+    </label>
     <button id="rollDiceBtn">擲骰子</button>
     <button class="backBtn" data-back="menu">返回主選單</button>
   </div>
@@ -315,7 +386,10 @@ button {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const sections = { menu, toss, dice, coin, russian, help };
-  function showSection(name){ Object.values(sections).forEach(s=>s.classList.remove('active')); sections[name].classList.add('active'); }
+  function showSection(name){
+    Object.values(sections).forEach(s => s.classList.remove('active'));
+    sections[name].classList.add('active');
+  }
   goToToss.onclick = () => showSection('toss');
   goToDice.onclick = () => showSection('dice');
   goToCoin.onclick = () => showSection('coin');
@@ -330,9 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
     cupB.style.animation = 'toss 900ms cubic-bezier(.2,.8,.2,1)';
     const a = Math.random()<0.5?0:1, b = Math.random()<0.5?0:1;
     setTimeout(()=>{
-      cupA.style.animation = ''; cupB.style.animation = '';
-      aFace.textContent = a===0?'平（正）':'凹（反）'; aFace.className = a===0?'half flat':'half curved';
-      bFace.textContent = b===0?'平（正）':'凹（反）'; bFace.className = b===0?'half flat':'half curved';
+      cupA.style.animation = '';
+      cupB.style.animation = '';
+      aFace.textContent = a===0?'平（正）':'凹（反）';
+      aFace.className = a===0?'half flat':'half curved';
+      bFace.textContent = b===0?'平（正）':'凹（反）';
+      bFace.className = b===0?'half flat':'half curved';
       if((a===0&&b===1)||(a===1&&b===0)) tossResult.textContent = '聖筊 ✅';
       else if(a===0&&b===0) tossResult.textContent = '笑筊 🤭';
       else tossResult.textContent = '陰筊 ❌';
@@ -345,25 +422,54 @@ document.addEventListener('DOMContentLoaded', () => {
     if(isNaN(count)||count<1) count=1; if(count>6) count=6;
     diceCount.value = count;
     const rolls = Array.from({length:count}, ()=>Math.floor(Math.random()*6)+1);
-    const counts = {}; rolls.forEach(v => counts[v]=(counts[v]||0)+1);
+    const counts = {};
+    rolls.forEach(v => counts[v]=(counts[v]||0)+1);
     diceResult.textContent = `結果：${rolls.join(', ')} / 分布：${Object.keys(counts).sort((a,b)=>a-b).map(k=>`${k}點 × ${counts[k]}顆`).join('，')}`;
-    diceVisual.innerHTML = ''; rolls.forEach(n=>{ const img=document.createElement('img'); img.src=`img/dice${n}.png`; img.alt=`${n}點`; diceVisual.appendChild(img); });
+    diceVisual.innerHTML = '';
+    rolls.forEach(n=>{
+      const img=document.createElement('img');
+      img.src=`img/dice${n}.png`;
+      img.alt=`${n}點`;
+      diceVisual.appendChild(img);
+    });
   };
 
   flipCoinBtn.onclick = () => {
-    const isHead = Math.random() < 0.5;
-    coinImg.src = isHead ? 'img/coin-head.png' : 'img/coin-tail.png';
-    coinText.textContent = isHead ? '結果：正面 🟡' : '結果：反面 ⚫';
+  	flipCoinBtn.disabled = true;
+  	coinText.textContent = '擲硬幣中…';
+	  setTimeout(() => {
+	    const isHead = Math.random() < 0.5;
+	    coinImg.src = isHead ? 'img/coin-head.png' : 'img/coin-tail.png';
+	    coinText.textContent = isHead ? '結果：正面 🟡' : '結果：反面 ⚫';
+	    flipCoinBtn.disabled = false;
+	  }, 800);
   };
 
-  function startNewGame(){ bulletPos = Math.floor(Math.random()*6)+1; currentTrigger=0; russianResult.textContent = '遊戲開始'; spinTriggerBtn.disabled = false; globalResetBtn.style.display = 'none'; }
   let bulletPos=0, currentTrigger=0;
+  function startNewGame(){
+    bulletPos = Math.floor(Math.random()*6)+1;
+    currentTrigger=0;
+    russianResult.textContent = '遊戲開始';
+    spinTriggerBtn.disabled = false;
+    globalResetBtn.style.display = 'none';
+  }
   spinTriggerBtn.onclick = () => {
-    spinTriggerBtn.disabled = true; russianResult.textContent = '扣板機中…';
+    spinTriggerBtn.disabled = true;
+    russianResult.textContent = '扣板機中…';
     setTimeout(()=>{
       currentTrigger++;
-      if(currentTrigger===bulletPos){ russianResult.textContent = '中彈💥！'; globalResetBtn.style.display = 'inline-block'; }
-      else { russianResult.textContent = `未中彈（${currentTrigger}/6）`; if(currentTrigger>=6){ russianResult.textContent = '安全通過'; globalResetBtn.style.display = 'inline-block'; } else spinTriggerBtn.disabled = false; }
+      if(currentTrigger===bulletPos){
+        russianResult.textContent = '中彈💥！';
+        globalResetBtn.style.display = 'inline-block';
+      } else {
+        russianResult.textContent = `未中彈（${currentTrigger}/6）`;
+        if(currentTrigger>=6){
+          russianResult.textContent = '安全通過';
+          globalResetBtn.style.display = 'inline-block';
+        } else {
+          spinTriggerBtn.disabled = false;
+        }
+      }
     },800);
   };
   globalResetBtn.onclick = startNewGame;
