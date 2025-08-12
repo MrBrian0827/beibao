@@ -3,11 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>隨機模擬器</title>
-<!-- favicon -->
-<link rel="icon" href="img/coin-icon.png" type="image/png" />
-<!-- manifest.json 連結 -->
-<link rel="manifest" href="manifest.json" />
+<title>多功能模擬器</title>
+<link rel="icon" href="img/icon-180.png" type="image/png" />
 <style>
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans CJK TC', 'Helvetica Neue', Arial;
@@ -24,7 +21,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
 .card {
   background: var(--card-bg);
@@ -40,6 +37,8 @@ h1 {
   margin: 0 0 16px;
   font-size: 20px;
   font-weight: 600;
+  word-break: break-word;
+  hyphens: auto;
 }
 .menu-grid {
   display: grid;
@@ -48,14 +47,20 @@ h1 {
 }
 .menu-grid button {
   height: 60px;
-  font-size: 1.6em;
+  font-size: clamp(1rem, 2vw, 1.5rem);
   border-radius: 8px;
   border: none;
   background: var(--main-color);
-  color: white;
+  color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease;
   width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  white-space: nowrap;       /* 不換行 */
+  font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+  overflow: hidden;
+  text-overflow: ellipsis;  /* 避免溢出出現省略號 */
 }
 .menu-grid button:hover:not(:disabled) {
   background: var(--main-hover);
@@ -64,38 +69,23 @@ h1 {
   background: #99b3b2;
   cursor: not-allowed;
 }
-/* 讓最後一個按鈕跨兩欄 */
 .menu-grid button#goToHelp {
   grid-column: span 2;
 }
-
-button {
+button, #tossBtn, #rollDiceBtn, #flipCoinBtn, #spinTriggerBtn {
   border-radius: 8px;
   border: none;
   background: var(--main-color);
-  color: white;
+  color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-size: 1.5em;
   padding: 15px 0;
 }
-
-/* 功能裡執行按鈕統一大小 */
-#tossBtn,
-#rollDiceBtn,
-#flipCoinBtn,
-#spinTriggerBtn {
+#tossBtn, #rollDiceBtn, #flipCoinBtn, #spinTriggerBtn {
   width: 120px;
   height: 60px;
-  font-size: 1.5em;
-  border-radius: 8px;
-  border: none;
-  background: var(--main-color);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
   margin: 12px auto 0;
-  display: block;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -114,11 +104,10 @@ button {
   background: #99b3b2;
   cursor: not-allowed;
 }
-
 .section { display: none; }
 .section.active { display: block; }
 .backBtn {
-  margin-top: 16px;
+  margin-top: 32px;
   padding: 15px 0;
   width: 100%;
 }
@@ -132,7 +121,6 @@ button {
   width: 120px;
   height: 80px;
   position: relative;
-  transform-origin: center;
 }
 .half {
   position: absolute;
@@ -142,32 +130,20 @@ button {
   width: 110px;
   height: 60px;
   border-radius: 60px 60px 20px 20px / 50px;
-  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 -6px 10px rgba(0,0,0,0.06);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
 }
-.flat {
-  background: #f6e7c8;
-}
-.curved {
-  background: #e8d6b0;
-}
+.flat { background: #f6e7c8; }
+.curved { background: #e8d6b0; }
 @keyframes toss {
-  0% {
-    transform: translateY(0) rotate(0);
-  }
-  30% {
-    transform: translateY(-48px) rotate(540deg);
-  }
-  60% {
-    transform: translateY(0) rotate(900deg);
-  }
-  100% {
-    transform: translateY(0) rotate(0);
-  }
+  0% { transform: translateY(0) rotate(0); }
+  30% { transform: translateY(-48px) rotate(540deg); }
+  60% { transform: translateY(0) rotate(900deg); }
+  100% { transform: translateY(0) rotate(0); }
 }
 #diceVisual {
   margin-top: 10px;
@@ -177,8 +153,8 @@ button {
   flex-wrap: wrap;
 }
 #diceVisual img {
-  width: 50px;
-  height: 50px;
+  width: 75px;
+  height: 75px;
 }
 #coinResult {
   margin-top: 10px;
@@ -189,8 +165,8 @@ button {
   gap: 8px;
 }
 #coinResult img {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   user-select: none;
   pointer-events: none;
 }
@@ -199,6 +175,23 @@ button {
   font-weight: 600;
   font-size: 18px;
   min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+#russianLoadingDots span {
+  display: inline-block;
+  animation: dotsBlink 1.4s infinite;
+  font-weight: 600;
+  font-size: 18px;
+}
+#russianLoadingDots span:nth-child(2) { animation-delay: 0.2s; }
+#russianLoadingDots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotsBlink {
+  0%,20% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
 }
 #help {
   text-align: left;
@@ -207,37 +200,26 @@ button {
   max-height: 60vh;
   overflow-y: auto;
 }
-#help h2 {
-  text-align: center;
-  margin: 0 0 8px;
-}
-#help h3 {
-  margin: 8px 0 4px;
-}
-#help ol {
-  margin: 4px 0;
-  padding-left: 20px;
-}
+#help h2 { text-align: center; margin: 0 0 8px; }
+#help h3 { margin: 8px 0 4px; }
+#help ol { margin: 4px 0; padding-left: 20px; }
 </style>
 </head>
 <body>
 <div class="card">
-  <!-- 主選單 -->
   <div id="menu" class="section active">
     <h1>多功能模擬器</h1>
     <div class="menu-grid">
       <button id="goToToss">🥠 擲筊</button>
       <button id="goToDice">🎲 擲骰子</button>
       <button id="goToCoin">
-        <img src="img/coin-icon.png" alt="硬幣" style="width:24px; height:24px; vertical-align:middle; margin-right:6px;">
-        擲硬幣
+        <img src="img/coin-icon.png" alt="硬幣" style="width:24px; height:24px; vertical-align:middle; margin-right:6px;">擲硬幣
       </button>
       <button id="goToRussian">🔫 俄羅斯輪盤</button>
       <button id="goToHelp">📱 加入手機主畫面說明</button>
     </div>
   </div>
 
-  <!-- 擲筊 -->
   <div id="toss" class="section">
     <h1>杯筊模擬器</h1>
     <div id="tossResult">按「擲筊」開始</div>
@@ -249,40 +231,36 @@ button {
     <button class="backBtn" data-back="menu">返回主選單</button>
   </div>
 
-  <!-- 擲骰子 -->
   <div id="dice" class="section">
     <h1>擲骰子</h1>
     <div id="diceResult"></div>
     <div id="diceVisual"></div>
-    <label style="display:block;margin-top:8px;">擲幾顆（1～6）：<input type="number" id="diceCount" min="1" max="6" value="1"/></label>
+    <label style="display:block;margin-top:8px;">擲幾顆（1～6）：<input type="number" id="diceCount" min="1" max="6" value="1" style="font-size:1.8em; padding:4px; width: 100px;"></label>
     <button id="rollDiceBtn">擲骰子</button>
     <button class="backBtn" data-back="menu">返回主選單</button>
   </div>
 
-  <!-- 擲硬幣 -->
   <div id="coin" class="section">
     <h1>擲硬幣</h1>
     <div id="coinResult">
       <img id="coinImg" src="img/coin-head.png" alt="硬幣" />
+      <img id="coinLoading" src="img/coin-loading.gif" alt="擲硬幣中動畫" style="display:none; width:120px; height:120px;" />
       <div id="coinText">按下按鈕開始</div>
     </div>
     <button id="flipCoinBtn">
-      <img src="img/coin-icon.png" alt="硬幣" style="width:24px; height:24px; vertical-align:middle; margin-right:6px;">
-      擲
+      <img src="img/coin-icon.png" alt="硬幣" style="width:24px; height:24px; vertical-align:middle; margin-right:6px;">擲
     </button>
     <button class="backBtn" data-back="menu">返回主選單</button>
   </div>
 
-  <!-- 俄羅斯輪盤 -->
   <div id="russian" class="section">
     <h1>俄羅斯輪盤</h1>
-    <div id="russianResult"></div>
+    <div id="russianResult">扣板機中<span id="russianLoadingDots"><span>.</span><span>.</span><span>.</span></span></div>
     <button id="spinTriggerBtn">扣板機</button>
     <button id="globalResetBtn" style="display:none;">重新開始新局</button>
     <button class="backBtn" data-back="menu">返回主選單</button>
   </div>
 
-  <!-- 使用說明 -->
   <div id="help" class="section">
     <h2>📱 加入手機主畫面說明</h2>
     <h3>iOS（Safari）</h3>
@@ -306,7 +284,10 @@ button {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const sections = { menu, toss, dice, coin, russian, help };
-  function showSection(name){ Object.values(sections).forEach(s=>s.classList.remove('active')); sections[name].classList.add('active'); }
+  const showSection = name => {
+    Object.values(sections).forEach(s => s.classList.remove('active'));
+    sections[name].classList.add('active');
+  };
   goToToss.onclick = () => showSection('toss');
   goToDice.onclick = () => showSection('dice');
   goToCoin.onclick = () => showSection('coin');
@@ -319,45 +300,80 @@ document.addEventListener('DOMContentLoaded', () => {
     tossResult.textContent = '擲筊中…';
     cupA.style.animation = 'toss 800ms cubic-bezier(.2,.8,.2,1)';
     cupB.style.animation = 'toss 900ms cubic-bezier(.2,.8,.2,1)';
-    const a = Math.random()<0.5?0:1, b = Math.random()<0.5?0:1;
-    setTimeout(()=>{
+    const a = Math.random() < 0.5 ? 0 : 1;
+    const b = Math.random() < 0.5 ? 0 : 1;
+    setTimeout(() => {
       cupA.style.animation = ''; cupB.style.animation = '';
-      aFace.textContent = a===0?'平（正）':'凹（反）'; aFace.className = a===0?'half flat':'half curved';
-      bFace.textContent = b===0?'平（正）':'凹（反）'; bFace.className = b===0?'half flat':'half curved';
-      if((a===0&&b===1)||(a===1&&b===0)) tossResult.textContent = '聖筊 ✅';
-      else if(a===0&&b===0) tossResult.textContent = '笑筊 🤭';
-      else tossResult.textContent = '陰筊 ❌';
+      aFace.textContent = a === 0 ? '平（正）' : '凹（反）'; aFace.className = a === 0 ? 'half flat' : 'half curved';
+      bFace.textContent = b === 0 ? '平（正）' : '凹（反）'; bFace.className = b === 0 ? 'half flat' : 'half curved';
+      tossResult.textContent = ((a === 0 && b === 1) || (a === 1 && b === 0)) ? '聖筊 ✅' : (a === 0 && b === 0) ? '笑筊 🤭' : '陰筊 ❌';
       tossBtn.disabled = false;
-    },850);
+    }, 850);
   };
 
   rollDiceBtn.onclick = () => {
     let count = parseInt(diceCount.value);
-    if(isNaN(count)||count<1) count=1; if(count>6) count=6;
+    if (isNaN(count) || count < 1) count = 1;
+    else if (count > 6) count = 6;
     diceCount.value = count;
-    const rolls = Array.from({length:count}, ()=>Math.floor(Math.random()*6)+1);
-    const counts = {}; rolls.forEach(v => counts[v]=(counts[v]||0)+1);
-    diceResult.textContent = `結果：${rolls.join(', ')} / 分布：${Object.keys(counts).sort((a,b)=>a-b).map(k=>`${k}點 × ${counts[k]}顆`).join('，')}`;
-    diceVisual.innerHTML = ''; rolls.forEach(n=>{ const img=document.createElement('img'); img.src=`img/dice${n}.png`; img.alt=`${n}點`; diceVisual.appendChild(img); });
+    const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * 6) + 1);
+    const counts = {};
+    rolls.forEach(v => counts[v] = (counts[v] || 0) + 1);
+    diceResult.textContent = `結果：${rolls.join(', ')} / 分布：${Object.keys(counts).sort((a,b) => a-b).map(k => `${k}點 × ${counts[k]}顆`).join('，')}`;
+    diceVisual.innerHTML = '';
+    rolls.forEach(n => {
+      const img = document.createElement('img');
+      img.src = `img/dice${n}.png`;
+      img.alt = `${n}點`;
+      diceVisual.appendChild(img);
+    });
   };
 
   flipCoinBtn.onclick = () => {
-    const isHead = Math.random() < 0.5;
-    coinImg.src = isHead ? 'img/coin-head.png' : 'img/coin-tail.png';
-    coinText.textContent = isHead ? '結果：正面 🟡' : '結果：反面 ⚫';
+    flipCoinBtn.disabled = true;
+    coinImg.style.display = 'none';
+    coinLoading.style.display = 'inline';
+    coinText.textContent = '擲硬幣中…';
+    setTimeout(() => {
+      const isHead = Math.random() < 0.5;
+      coinImg.src = isHead ? 'img/coin-head.png' : 'img/coin-tail.png';
+      coinText.textContent = isHead ? '結果：正面 🟡' : '結果：反面 ⚫';
+      coinLoading.style.display = 'none';
+      coinImg.style.display = 'inline';
+      flipCoinBtn.disabled = false;
+    }, 800);
   };
 
-  function startNewGame(){ bulletPos = Math.floor(Math.random()*6)+1; currentTrigger=0; russianResult.textContent = '遊戲開始'; spinTriggerBtn.disabled = false; globalResetBtn.style.display = 'none'; }
-  let bulletPos=0, currentTrigger=0;
+  let bulletPos = 0, currentTrigger = 0;
+  function startNewGame() {
+    bulletPos = Math.floor(Math.random() * 6) + 1;
+    currentTrigger = 0;
+    russianResult.innerHTML = '遊戲開始';
+    spinTriggerBtn.style.display = 'inline-flex';
+    spinTriggerBtn.disabled = false;
+    globalResetBtn.style.display = 'none';
+  }
   spinTriggerBtn.onclick = () => {
-    spinTriggerBtn.disabled = true; russianResult.textContent = '扣板機中…';
-    setTimeout(()=>{
+    spinTriggerBtn.disabled = true;
+    russianResult.innerHTML = '扣板機中<span id="russianLoadingDots"><span>.</span><span>.</span><span>.</span></span>';
+    setTimeout(() => {
       currentTrigger++;
-      if(currentTrigger===bulletPos){ russianResult.textContent = '中彈💥！'; globalResetBtn.style.display = 'inline-block'; }
-      else { russianResult.textContent = `未中彈（${currentTrigger}/6）`; if(currentTrigger>=6){ russianResult.textContent = '安全通過'; globalResetBtn.style.display = 'inline-block'; } else spinTriggerBtn.disabled = false; }
-    },800);
+      if (currentTrigger === bulletPos) {
+        russianResult.textContent = '中彈💥！';
+        spinTriggerBtn.style.display = 'none';
+        globalResetBtn.style.display = 'inline-block';
+      } else {
+        russianResult.textContent = `未中彈（${currentTrigger}/6）`;
+        if (currentTrigger >= 6) {
+          russianResult.textContent = '安全通過';
+          spinTriggerBtn.style.display = 'none';
+          globalResetBtn.style.display = 'inline-block';
+        } else spinTriggerBtn.disabled = false;
+      }
+    }, 1000);
   };
   globalResetBtn.onclick = startNewGame;
+
   startNewGame();
 });
 </script>
